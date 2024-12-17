@@ -104,5 +104,4 @@ public abstract class AbstractCrud<T> {
         return ((Long) q.getSingleResult()).intValue();
     }
 
-// teste
 }
