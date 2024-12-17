@@ -18,13 +18,16 @@ public abstract class AbstractCrud<T> {
     
     private Class<T> entityClass;
 
+    // TODO: Alteração de classe
     protected AbstractCrud(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
 
 
-    protected abstract EntityManager getEntityManager();
+    protected abstract EntityManager getEntityManager(){
+        return entityManager;
+    }
 
 
     protected abstract  void close();
@@ -33,16 +36,11 @@ public abstract class AbstractCrud<T> {
 
     public Exception persist(T entity) {
         try {
-            System.out.println("iniciando ########");
-            getEntityManager().getTransaction().begin();
             getEntityManager().persist(entity);
-            System.out.println("foi o persist $$$$$$");
             getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            AppLog.getInstance().info("Registro inserido com sucesso pela classe: " + this.getClass().getName());
+            AppLog.getInstance().info("Registro realizado com sucesso na classe: " + this..getClass().getName());
             return null;
         } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
             AppLog.getInstance().warn("Erro ao inserir no banco de dados: " + this.getClass().getName() + "==>" + e.getMessage());
             return e;
         }
@@ -50,27 +48,24 @@ public abstract class AbstractCrud<T> {
 
     public Exception merge(T entity) {
         try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(entity);
+            getEntityManager().merge(entity); 
             getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
             AppLog.getInstance().info("Registro alterado com sucesso pela classe: " + this.getClass().getName());
             return null;
         } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
+            AppLog.getInstance().warn("Erro ao alterar o registro: " + this.getClass().getName() + "==>" + e.getMessage());
             return e;
         }
     }
 
     public Exception remove(T entity) {
         try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(getEntityManager().merge(entity));
+            getEntityManager().remove(getEntityManager().merge(entity)); 
             getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
             AppLog.getInstance().info("Registro removido com sucesso pela classe: " + this.getClass().getName());
             return null;
         } catch (Exception e) {
+            AppLog.getInstance().warn("Erro ao remover o registro: " + this.getClass().getName() + "==>" + e.getMessage());
             return e;
         }
     }
@@ -86,6 +81,7 @@ public abstract class AbstractCrud<T> {
             cq.select(cq.from(entityClass));
             return getEntityManager().createQuery(cq).getResultList();
         } catch (Exception e) {
+            AppLog.getInstance().warn("Erro ao recuperar os registros: " + this.getClass().getName() + "==>" + e.getMessage());
             return Collections.emptyList();
         }
 
@@ -97,7 +93,7 @@ public abstract class AbstractCrud<T> {
         jakarta.persistence.Query q = getEntityManager().createQuery(cq);
         q.setMaxResults(range[1] - range[0] + 1);
         q.setFirstResult(range[0]);
-        return Collections.emptyList();
+        return q.getResultList();
     }
 
     public int count() {

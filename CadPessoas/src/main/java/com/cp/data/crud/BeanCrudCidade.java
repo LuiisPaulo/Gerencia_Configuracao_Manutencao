@@ -16,15 +16,13 @@ import jakarta.persistence.Persistence;
 @Stateless
 public class BeanCrudCidade extends AbstractCrud<Cidade> {
 
+    // TODO: Implementar o gerenciamento de conexão e transações utilizando EJB
+    @PersistenceContext
     private EntityManager em;
 
     @Override
     protected EntityManager getEntityManager() {
-        if (em == null) {
-            em = Persistence.createEntityManagerFactory(EMNames.EMN1, EMNames.getEMN1Props()).createEntityManager();
-            AppLog.getInstance().info("Entity manager criado com sucesso");
-        }
-        return em;
+      return em;
     }
 
     @Override
