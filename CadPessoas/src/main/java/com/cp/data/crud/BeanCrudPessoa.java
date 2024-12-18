@@ -16,14 +16,12 @@ import jakarta.persistence.Persistence;
 @Stateless
 public class BeanCrudPessoa extends AbstractCrud<Pessoa> {
 
+    // TODO: Implementar o gerenciamento de conexão e transações automaticamente utilizando EJB
+    @PersistenceConext
     private EntityManager em;
 
     @Override
     protected EntityManager getEntityManager() {
-        if (em == null) {
-                em = Persistence.createEntityManagerFactory(EMNames.EMN1, EMNames.getEMN1Props()).createEntityManager();
-                AppLog.getInstance().info("Entity manager criado com sucesso");
-        }
         return em;
     }
 
